@@ -2,12 +2,15 @@
 
 namespace A17\Twill\Services\MediaLibrary;
 
+use App\CacheCdn;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use League\Glide\Responses\LaravelResponseFactory;
+use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use League\Glide\Urls\UrlBuilderFactory;
@@ -70,6 +73,7 @@ class Glide implements ImageServiceInterface
             'response' => new LaravelResponseFactory($this->request),
             'source' => $this->config->get('twill.glide.source'),
             'cache' => $this->config->get('twill.glide.cache'),
+            'source_path_prefix' => $this->config->get('twill.glide.source_path_prefix'),
             'cache_path_prefix' => $this->config->get('twill.glide.cache_path_prefix'),
             'base_url' => $baseUrl,
             'presets' => $this->config->get('twill.glide.presets', []),
@@ -92,6 +96,10 @@ class Glide implements ImageServiceInterface
             SignatureFactory::create($this->config->get('twill.glide.sign_key'))->validateRequest($this->config->get('twill.glide.base_path') . '/' . $path, $this->request->all());
         }
 
+        $defaultParams = config('twill.glide.default_params');
+        $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
+        DB::table('cache_cdns')->insert(["name" => $cachePath, "created_at" =>  \Carbon\Carbon::now(), "updated_at" => \Carbon\Carbon::now() ]);
+
         return $this->server->getImageResponse($path, $this->request->all());
     }
 
@@ -109,7 +117,20 @@ class Glide implements ImageServiceInterface
             return $this->urlBuilder->getUrl($id);
         }
 
-        return $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
+        $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $params));
+
+        if(DB::table('cache_cdns')->where(['name' => $cachePath])->first()) {
+            $s3Bucket = env("S3_BUCKET", "");
+            $s3Endpoint = env("S3_ENDPOINT", "");
+
+            $s3Part = explode("//", $s3Endpoint);
+
+            $url = $s3Part[0] . "//" . $s3Bucket . "." . $s3Part[1] . "/" . $this->server->getCachePath($id, array_replace($defaultParams, $params));
+            return $url;
+        }
+        else {
+            return $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
+        }
     }
 
     /**
