@@ -15,7 +15,9 @@ class CreateCacheCdnsTable extends Migration
     {
         Schema::create('cache_cdns', function (Blueprint $table) {
             $table->id();
-            $table->text("name");
+            $table->char("hash", 32)->unique();
+            $table->char("uuid", 36);
+            $table->index('uuid');
             $table->timestamps();
         });
     }
