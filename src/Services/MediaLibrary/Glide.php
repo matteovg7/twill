@@ -96,10 +96,16 @@ class Glide implements ImageServiceInterface
             SignatureFactory::create($this->config->get('twill.glide.sign_key'))->validateRequest($this->config->get('twill.glide.base_path') . '/' . $path, $this->request->all());
         }
 
-        $defaultParams = config('twill.glide.default_params');
-        $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
-        DB::table('cache_cdns')->insert(["name" => $cachePath, "created_at" =>  \Carbon\Carbon::now(), "updated_at" => \Carbon\Carbon::now() ]);
+        if(env('GLIDE_STORAGE') == "s3") {
+            $defaultParams = config('twill.glide.default_params');
+            $pathExplode = explode("/", $path);
+            $uuid = $pathExplode[0];
+            $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
+            $cachePathMd5 = md5($cachePath);
 
+            DB::table('cache_cdns')->insert(["hash" => $cachePathMd5, "uuid" => $uuid, "created_at" =>  \Carbon\Carbon::now(), "updated_at" => \Carbon\Carbon::now() ]);
+        }
+        
         return $this->server->getImageResponse($path, $this->request->all());
     }
 
@@ -118,14 +124,10 @@ class Glide implements ImageServiceInterface
         }
 
         $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $params));
+        $cachePathMd5 = md5($cachePath);
 
-        if(DB::table('cache_cdns')->where(['name' => $cachePath])->first()) {
-            $s3Bucket = env("S3_BUCKET", "");
-            $s3Endpoint = env("S3_ENDPOINT", "");
-
-            $s3Part = explode("//", $s3Endpoint);
-
-            $url = $s3Part[0] . "//" . $s3Bucket . "." . $s3Part[1] . "/" . $this->server->getCachePath($id, array_replace($defaultParams, $params));
+        if(env('GLIDE_STORAGE') == "s3" && DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
             return $url;
         }
         else {
