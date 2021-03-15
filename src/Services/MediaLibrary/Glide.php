@@ -2,7 +2,6 @@
 
 namespace A17\Twill\Services\MediaLibrary;
 
-use App\CacheCdn;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
