@@ -95,16 +95,24 @@ class Glide implements ImageServiceInterface
             SignatureFactory::create($this->config->get('twill.glide.sign_key'))->validateRequest($this->config->get('twill.glide.base_path') . '/' . $path, $this->request->all());
         }
 
-        if(env('GLIDE_STORAGE') == "s3") {
-            $defaultParams = config('twill.glide.default_params');
+        $defaultParams = config('twill.glide.default_params');
+        $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
+        $cachePathMd5 = md5($cachePath);
+
+        if(env('GLIDE_STORAGE') == "s3" && !DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
             $pathExplode = explode("/", $path);
             $uuid = $pathExplode[0];
-            $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
-            $cachePathMd5 = md5($cachePath);
+
+            //Pulisco la cache prima dell'elemento prima di rigenerarla
+            DB::table('cache_cdns')->where(['uuid' => $uuid])->delete();
+
+            foreach($this->config->get('twill.glide.cache')->listContents($this->config->get('twill.glide.cache_path_prefix') . "/" . $path) as $file) {
+                $this->config->get('twill.glide.cache')->delete($file["path"]);
+            }
 
             DB::table('cache_cdns')->insert(["hash" => $cachePathMd5, "uuid" => $uuid, "created_at" =>  \Carbon\Carbon::now(), "updated_at" => \Carbon\Carbon::now() ]);
         }
-        
+
         return $this->server->getImageResponse($path, $this->request->all());
     }
 
@@ -202,7 +210,16 @@ class Glide implements ImageServiceInterface
 
         $params = Arr::except($params, $this->cropParamsKeys);
 
-        return $this->getUrl($id, array_replace($defaultParams, $params + $cropParams));
+        $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $params + $cropParams));
+        $cachePathMd5 = md5($cachePath);
+
+        if(env('GLIDE_STORAGE') == "s3" && DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
+            return $url;
+        }
+        else {
+            return $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params + $cropParams));
+        }
     }
 
     /**
