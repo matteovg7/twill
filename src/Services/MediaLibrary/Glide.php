@@ -150,7 +150,16 @@ class Glide implements ImageServiceInterface
      */
     public function getUrlWithCrop($id, array $cropParams, array $params = [])
     {
-        return $this->getUrl($id, $this->getCrop($cropParams) + $params);
+        $cachePath = $this->server->getCachePath($id, $this->getCrop($cropParams) + $params);
+        $cachePathMd5 = md5($cachePath);
+
+        if(env('GLIDE_STORAGE') == "s3" && DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
+            return $url;
+        }
+        else {
+            return $this->getUrl($id, $this->getCrop($cropParams) + $params);
+        }
     }
 
     /**
@@ -179,7 +188,14 @@ class Glide implements ImageServiceInterface
 
         $params = Arr::except($params, $this->cropParamsKeys);
 
-        return $this->getUrl($id, array_replace($defaultParams, $params + $cropParams));
+        $path = $this->server->makeImage($id, array_replace($defaultParams, $params + $cropParams));
+        
+        if(env('GLIDE_STORAGE') == "s3") {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $path;
+            return $url;
+        }
+        
+        return $path;
     }
 
     /**
