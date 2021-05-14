@@ -91,6 +91,12 @@ class Glide implements ImageServiceInterface
      */
     public function render($path)
     {
+        $pathArray = explode(".", $path);
+        $extension = end($pathArray);
+        if($extension == "gif") {
+            return $this->server->getResponseFactory()->create($this->server->getSource(), $this->server->getSourcePath($path));
+        }
+
         if ($this->config->get('twill.glide.use_signed_urls')) {
             SignatureFactory::create($this->config->get('twill.glide.sign_key'))->validateRequest($this->config->get('twill.glide.base_path') . '/' . $path, $this->request->all());
         }
