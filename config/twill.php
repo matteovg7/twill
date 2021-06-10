@@ -123,6 +123,8 @@ return [
     'files_table' => 'files',
     'fileables_table' => 'fileables',
     'related_table' => 'related',
+    'tags_table' => 'tags',
+    'tagged_table' => 'tagged',
 
     /*
     |--------------------------------------------------------------------------
@@ -163,7 +165,7 @@ return [
     |
      */
     'js_namespace' => 'TWILL',
-    'dev_mode' => false,
+    'dev_mode' => env('TWILL_DEV_MODE', false),
     'dev_mode_url' => env('TWILL_DEV_MODE_URL', 'http://localhost:8080'),
     'public_directory' => env('TWILL_ASSETS_DIR', 'assets/admin'),
     'manifest_file' => 'twill-manifest.json',
@@ -194,4 +196,25 @@ return [
         'zh-Hans',
         'ru',
     ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Base classes for automatic generation of Modules and Capsules
+    |--------------------------------------------------------------------------
+    |
+     */
+    'base_model' => A17\Twill\Models\Model::class,
+
+    'base_translation_model' => A17\Twill\Models\Model::class,
+
+    'base_slug_model' => A17\Twill\Models\Model::class,
+
+    'base_revision_model' => A17\Twill\Models\Revision::class,
+
+    'base_repository' => A17\Twill\Repositories\ModuleRepository::class,
+
+    'base_controller' => A17\Twill\Http\Controllers\Admin\ModuleController::class,
+
+    'base_request' => A17\Twill\Http\Requests\Admin\Request::class,
 ];

@@ -57,7 +57,7 @@ return [
     'emails' => [
         'all-rights-reserved' => 'Tous droits réservés',
         'hello' => 'Bonjour!',
-        'problems' => 'Si vous ne parvenez pas à cliquer sur le bouton ": actionText", copiez et collez l\'URL ci-dessous dans votre navigateur Web: [: url] (: url)',
+        'problems' => 'Si vous ne parvenez pas à cliquer sur le bouton ":actionText", copiez et collez l\'URL ci-dessous dans votre navigateur Web: [:url] (:url)',
         'regards' => 'Cordialement,',
     ],
     'fields' => [
@@ -155,8 +155,8 @@ return [
             'destroy' => 'Supprimer définitivement',
             'duplicate' => 'Dupliquer',
             'edit' => 'Modifier',
-            'feature' => 'Mettre en avant',
             'publish' => 'Publier',
+            'feature' => 'Mettre en avant',
             'restore' => 'Restaurer',
             'unfeature' => 'Ne plus mettre en avant',
             'unpublish' => 'Dépublier',
