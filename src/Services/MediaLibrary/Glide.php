@@ -93,7 +93,7 @@ class Glide implements ImageServiceInterface
     {
         $pathArray = explode(".", $path);
         $extension = end($pathArray);
-        if($extension == "gif") {
+        if($extension == "gif" || $extension == "svg") {
             return $this->server->getResponseFactory()->create($this->server->getSource(), $this->server->getSourcePath($path));
         }
 
