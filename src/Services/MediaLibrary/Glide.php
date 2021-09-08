@@ -144,8 +144,7 @@ class Glide implements ImageServiceInterface
             return $url;
         }
         else {
-            $this->getOriginalMediaUrl($id) ??
-            $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
+            return $this->getOriginalMediaUrl($id) ?? $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
         }
     }
 
