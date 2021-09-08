@@ -144,7 +144,8 @@ class Glide implements ImageServiceInterface
             return $url;
         }
         else {
-            return $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
+            $this->getOriginalMediaUrl($id) ??
+            $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
         }
     }
 
@@ -195,12 +196,12 @@ class Glide implements ImageServiceInterface
         $params = Arr::except($params, $this->cropParamsKeys);
 
         $path = $this->server->makeImage($id, array_replace($defaultParams, $params + $cropParams));
-        
+
         if(env('GLIDE_STORAGE') == "s3") {
             $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $path;
             return $url;
         }
-        
+
         return $path;
     }
 
@@ -259,7 +260,7 @@ class Glide implements ImageServiceInterface
      */
     public function getRawUrl($id)
     {
-        return $this->urlBuilder->getUrl($id);
+        return $this->getOriginalMediaUrl($id) ?? $this->urlBuilder->getUrl($id);
     }
 
     /**
@@ -333,5 +334,39 @@ class Glide implements ImageServiceInterface
         }
 
         return [];
+    }
+
+    /**
+     * @param string $id
+     * @return string
+     */
+    private function getOriginalMediaUrl($id)
+    {
+        $libraryDisk = $this->config->get('twill.media_library.disk');
+        $endpointType = $this->config->get('twill.media_library.endpoint_type');
+        $localMediaLibraryUrl = $this->config->get("filesystems.disks.$libraryDisk.url");
+        $originalMediaForExtensions = $this->config->get('twill.glide.original_media_for_extensions');
+        $addParamsToSvgs = $this->config->get('twill.glide.add_params_to_svgs', false);
+
+        if ((Str::endsWith($id, '.svg') && $addParamsToSvgs) || !Str::endsWith($id, $originalMediaForExtensions)) {
+            return null;
+        }
+
+        /** @var string $endpoint */
+        $endpoint;
+
+        switch ($endpointType) {
+            case 'local':
+                $endpoint = $localMediaLibraryUrl;
+                break;
+            case 's3':
+                $endpoint = s3Endpoint($libraryDisk);
+                break;
+            case 'azure':
+                $endpoint = azureEndpoint($libraryDisk);
+                break;
+        }
+
+        return $endpoint . '/' . $id;
     }
 }
