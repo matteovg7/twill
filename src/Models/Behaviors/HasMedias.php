@@ -112,7 +112,12 @@ trait HasMedias
             return null;
         }
 
-        return ImageService::getTransparentFallbackUrl();
+        $data = [
+            "fallback" => ImageService::getTransparentFallbackUrl(),
+            "webp" => ImageService::getTransparentFallbackUrl(),
+        ];
+
+        return $data;
     }
 
     /**
