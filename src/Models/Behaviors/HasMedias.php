@@ -100,7 +100,12 @@ trait HasMedias
                 return ImageService::getCmsUrl($media->uuid, $crop_params + $params);
             }
 
-            return ImageService::getUrlWithCrop($media->uuid, $crop_params, $params);
+            $data = [
+                "fallback" => ImageService::getUrlWithCrop($media->uuid, $crop_params, $params),
+                "webp" => ImageService::getUrlWithCrop($media->uuid, $crop_params, $params + ['fm' => 'webp']),
+            ];
+
+            return $data;
         }
 
         if ($has_fallback) {
