@@ -2,14 +2,27 @@
 
 namespace {{namespace}};
 
-use {{baseController}};
+use {{baseController}} as BaseModuleController;
 
-class {{controllerClassName}} extends ModuleController
+class {{controllerClassName}} extends BaseModuleController
 {
     protected $moduleName = '{{moduleName}}';
+<<<<<<< HEAD
     {{!hasSlug}}
     protected $indexOptions = [
         'permalink' => false
     ];
     {{/!hasSlug}}
+=======
+
+    protected $indexOptions = [
+        {{permalinkOption}}
+        {{reorderOption}}
+    ];{{hasNesting}}
+
+    protected $showOnlyParentItemsInBrowsers = true;
+
+    protected $nestedItemsDepth = 1;
+    {{/hasNesting}}
+>>>>>>> upstream/2.x
 }

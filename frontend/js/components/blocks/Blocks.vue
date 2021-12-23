@@ -12,10 +12,17 @@
           <div class="blocks__item"
                v-for="savedBlock in savedBlocks"
                :key="savedBlock.id">
+<<<<<<< HEAD
             <a17-block-model :editor-name="editorName"
                              :block="savedBlock"
                              v-slot="{ block, blockIndex, add, edit, move, remove, duplicate }">
               <a17-block-item ref="blockList"
+=======
+            <a17-blockeditor-model :editor-name="editorName"
+                             :block="savedBlock"
+                             v-slot="{ block, blockIndex, add, edit, move, remove, duplicate }">
+              <a17-blockeditor-item ref="blockList"
+>>>>>>> upstream/2.x
                               :block="block"
                               :index="blockIndex"
                               :opened="opened"
@@ -72,8 +79,13 @@
                         @click="move(n - 1)"
                         :key="n">{{ n }}
                 </button>
+<<<<<<< HEAD
               </a17-block-item>
             </a17-block-model>
+=======
+              </a17-blockeditor-item>
+            </a17-blockeditor-model>
+>>>>>>> upstream/2.x
           </div>
         </transition-group>
       </draggable>
@@ -93,7 +105,11 @@
 
           <div slot="dropdown__content">
             <template v-for="availableBlock in availableBlocks">
+<<<<<<< HEAD
               <a17-block-model :editor-name="editorName"
+=======
+              <a17-blockeditor-model :editor-name="editorName"
+>>>>>>> upstream/2.x
                                :block="availableBlock"
                                :key="availableBlock.component"
                                v-slot="{ add, block }">
@@ -110,7 +126,11 @@
                   ></span>
                   <span class="blocks__title">{{ availableBlock.title }}</span>
                 </button>
+<<<<<<< HEAD
               </a17-block-model>
+=======
+              </a17-blockeditor-model>
+>>>>>>> upstream/2.x
             </template>
           </div>
         </a17-dropdown>
@@ -131,15 +151,26 @@
   import { mapState, mapGetters } from 'vuex'
   import { DraggableMixin, EditorMixin } from '@/mixins/index'
   import draggable from 'vuedraggable'
+<<<<<<< HEAD
   import BlockItem from '@/components/blocks/BlockItem.vue'
   import BlocksList from '@/components/blocks/BlocksList'
   import BlockModel from '@/components/blocks/BlockModel'
+=======
+  import BlockEditorItem from '@/components/blocks/BlockEditorItem.vue'
+  import BlocksList from '@/components/blocks/BlocksList'
+  import BlockEditorModel from '@/components/blocks/BlockEditorModel'
+>>>>>>> upstream/2.x
 
   export default {
     name: 'A17Blocks',
     components: {
+<<<<<<< HEAD
       'a17-block-item': BlockItem,
       'a17-block-model': BlockModel,
+=======
+      'a17-blockeditor-item': BlockEditorItem,
+      'a17-blockeditor-model': BlockEditorModel,
+>>>>>>> upstream/2.x
       'a17-blocks-list': BlocksList,
       draggable
     },

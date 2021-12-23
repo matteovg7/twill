@@ -1,9 +1,15 @@
 <template>
   <div class="editorSidebar">
     <template v-show="hasBlockActive">
+<<<<<<< HEAD
       <a17-block-list :editor-name="editorName" v-slot="{ allSavedBlocks }">
         <div class="editorSidebar__edit-list">
           <a17-block-model
+=======
+      <a17-blocks-list :editor-name="editorName" v-slot="{ allSavedBlocks }">
+        <div class="editorSidebar__edit-list">
+          <a17-blockeditor-model
+>>>>>>> upstream/2.x
             :block="savedBlock"
             :editor-name="editorName"
             v-for="savedBlock in allSavedBlocks"
@@ -27,9 +33,15 @@
                 </a17-button>
               </div>
             </div>
+<<<<<<< HEAD
           </a17-block-model>
         </div>
       </a17-block-list>
+=======
+          </a17-blockeditor-model>
+        </div>
+      </a17-blocks-list>
+>>>>>>> upstream/2.x
     </template>
 
     <template v-if="!hasBlockActive">
@@ -50,8 +62,13 @@
   import { BlockEditorMixin } from '@/mixins'
   import A17EditorSidebarBlockItem from '@/components/editor/EditorSidebarBlockItem'
   import A17EditorSidebarBlockList from '@/components/editor/EditorSidebarBlockList'
+<<<<<<< HEAD
   import A17BlockList from '@/components/blocks/BlocksList'
   import A17BlockModel from '@/components/blocks/BlockModel'
+=======
+  import A17BlocksList from '@/components/blocks/BlocksList'
+  import A17BlockEditorModel from '@/components/blocks/BlockEditorModel'
+>>>>>>> upstream/2.x
 
   export default {
     name: 'A17editorsidebar',
@@ -76,8 +93,13 @@
     components: {
       'a17-sidebar-block-item': A17EditorSidebarBlockItem,
       'a17-sidebar-block-list': A17EditorSidebarBlockList,
+<<<<<<< HEAD
       'a17-block-list': A17BlockList,
       'a17-block-model': A17BlockModel
+=======
+      'a17-blocks-list': A17BlocksList,
+      'a17-blockeditor-model': A17BlockEditorModel
+>>>>>>> upstream/2.x
     },
     mixins: [BlockEditorMixin],
     computed: {

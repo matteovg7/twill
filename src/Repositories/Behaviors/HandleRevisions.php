@@ -2,7 +2,12 @@
 
 namespace A17\Twill\Repositories\Behaviors;
 
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+=======
+use A17\Twill\Models\Behaviors\HasRelated;
+use A17\Twill\Models\RelatedItem;
+>>>>>>> upstream/2.x
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -16,14 +21,16 @@ trait HandleRevisions
      */
     public function hydrateHandleRevisions($object, $fields)
     {
-        // HandleRepeaters trait => getRepeaters
         foreach($this->getRepeaters() as $repeater) {
             $this->hydrateRepeater($object, $fields, $repeater['relation'], $repeater['model']);
         }
 
-        // HandleBrowers trait => getBrowsers
         foreach($this->getBrowsers() as $browser) {
             $this->hydrateBrowser($object, $fields, $browser['relation'], $browser['positionAttribute'], $browser['model']);
+        }
+
+        if (classHasTrait(get_class($object), HasRelated::class)) {
+            $this->hydrateRelatedBrowsers($object, $fields);
         }
 
         return $object;
@@ -127,7 +134,7 @@ trait HandleRevisions
      */
     public function hydrateBrowser($object, $fields, $relationship, $positionAttribute = 'position', $model = null)
     {
-        return $this->hydrateOrderedBelongsTomany($object, $fields, $relationship, $positionAttribute, $model);
+        return $this->hydrateOrderedBelongsToMany($object, $fields, $relationship, $positionAttribute, $model);
     }
 
     /**
@@ -138,7 +145,11 @@ trait HandleRevisions
      * @param \A17\Twill\Models\Model|null $model
      * @return void
      */
+<<<<<<< HEAD
     public function hydrateOrderedBelongsTomany($object, $fields, $relationship, $positionAttribute = 'position', $model = null)
+=======
+    public function hydrateOrderedBelongsToMany($object, $fields, $relationship, $positionAttribute = 'position', $model = null)
+>>>>>>> upstream/2.x
     {
         $fieldsHasElements = isset($fields['browsers'][$relationship]) && !empty($fields['browsers'][$relationship]);
         $relatedElements = $fieldsHasElements ? $fields['browsers'][$relationship] : [];
@@ -162,6 +173,46 @@ trait HandleRevisions
     /**
      * @param \A17\Twill\Models\Model $object
      * @param array $fields
+<<<<<<< HEAD
+=======
+     * @return void
+     */
+    public function hydrateRelatedBrowsers($object, $fields)
+    {
+        $relatedBrowsers = $this->getRelatedBrowsers();
+
+        $initialRelatedItems = $object->relatedItems()
+            ->whereNotIn('browser_name', $relatedBrowsers->pluck('browserName'))
+            ->get();
+
+        $relatedBrowserItems = collect();
+
+        foreach ($relatedBrowsers as $browser) {
+            $browserField = $fields['browsers'][$browser['browserName']] ?? [];
+
+            foreach ($browserField as $values) {
+                $position = 1;
+
+                $relatedBrowserItems->push(RelatedItem::make([
+                    'subject_id' => $object->getKey(),
+                    'subject_type' => $object->getMorphClass(),
+                    'related_id' => $values['id'],
+                    'related_type' => $values['endpointType'],
+                    'browser_name' => $browser['browserName'],
+                    'position' => $position++,
+                ]));
+            }
+        }
+
+        $allRelatedItems = $relatedBrowserItems->concat($initialRelatedItems);
+
+        $object->setRelation('relatedItems', $allRelatedItems);
+    }
+
+    /**
+     * @param \A17\Twill\Models\Model $object
+     * @param array $fields
+>>>>>>> upstream/2.x
      * @param string $relationship
      * @param \A17\Twill\Models\Model $model
      * @param string|null $repeaterName

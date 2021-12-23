@@ -130,7 +130,6 @@ class Glide implements ImageServiceInterface
     public function getUrl($id, array $params = [])
     {
         $defaultParams = config('twill.glide.default_params');
-        $addParamsToSvgs = config('twill.glide.add_params_to_svgs', false);
 
         if (!$addParamsToSvgs && Str::endsWith($id, '.svg')) {
             return $this->urlBuilder->getUrl($id);
@@ -146,6 +145,8 @@ class Glide implements ImageServiceInterface
         else {
             return $this->getOriginalMediaUrl($id) ?? $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
         }
+        return $this->getOriginalMediaUrl($id) ??
+            $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
     }
 
     /**
@@ -336,7 +337,7 @@ class Glide implements ImageServiceInterface
     }
 
     /**
-     * @param string $id
+     * @param string $id 
      * @return string
      */
     private function getOriginalMediaUrl($id)
