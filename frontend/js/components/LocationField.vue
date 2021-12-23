@@ -231,8 +231,6 @@
         // see formStore mixin
         this.saveIntoStore()
       },
-<<<<<<< HEAD
-=======
       onLatLngEntered: debounce(function (lat, lng) {
         const latlng = new google.maps.LatLng(lat, lng)
 
@@ -250,7 +248,6 @@
         // see formStore mixin
         this.saveIntoStore()
       }, 600),
->>>>>>> upstream/2.x
       clearMarkers: function () {
         for (let i = 0; i < this.markers.length; i++) {
           if (this.markers[i]) {

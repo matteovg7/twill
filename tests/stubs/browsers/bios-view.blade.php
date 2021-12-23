@@ -1,6 +1,4 @@
 <div>This is a bio</div>
-<<<<<<< HEAD
-=======
 
 <div>
     @if ($writer = $item->writer->first())
@@ -9,4 +7,3 @@
         No writer
     @endif
 </div>
->>>>>>> upstream/2.x

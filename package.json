@@ -1,10 +1,6 @@
 {
   "name": "@area17/twill",
-<<<<<<< HEAD
-  "version": "2.5.1",
-=======
   "version": "2.6.0",
->>>>>>> upstream/2.x
   "private": true,
   "scripts": {
     "inspect": "vue-cli-service inspect --mode production",

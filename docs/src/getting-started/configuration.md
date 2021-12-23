@@ -328,11 +328,7 @@ MEDIA_LIBRARY_IMAGE_SERVICE=A17\Twill\Services\MediaLibrary\Glide
 
 If you want to add support for other image formats, which aren't covered by Glide, you can specify an array of extensions. For files matching the ending, the original media URL will be returned, instead of the modified one. For this, you can specify the following configuration key: `glide.original_media_for_extensions`
 
-<<<<<<< HEAD:docs/.sections/getting-started/configuration.md
-#### Imgix
-=======
 ## Imgix
->>>>>>> upstream/2.x:docs/src/getting-started/configuration.md
 
 As noted above, by default, Twill uses and recommends using [Imgix](https://imgix.com) to transform, optimize, and intelligently cache your uploaded images. 
 

@@ -334,17 +334,6 @@ return [
     ],
     'notifications' => [
         'reset' => [
-<<<<<<< HEAD
-            'action' => 'Reset password',
-            'content' => 'You are receiving this email because we received a password reset. If you did not request a password reset, no further action is required.',
-            'subject' => ':appName | Reset password',
-        ],
-        'welcome' => [
-            'action' => 'Choose your own password',
-            'content' => 'You are receiving this email because an account was created for you on :name.',
-            'title' => 'Welcome',
-            'subject' => ':appName | Welcome',
-=======
             'action' => 'Passwort zurücksetzen',
             'content' => 'Sie erhalten diese E-Mail, weil das Zurücksetzen des Passworts angefordert wurde. Wenn Sie das Zurücksetzen des Passworts nicht angefordert haben, ist keine weitere Aktion erforderlich.',
             'subject' => ':appName | Passwort zurücksetzen',
@@ -354,7 +343,6 @@ return [
             'content' => 'Sie erhalten diese E-Mail, weil ein Konto für :name für Sie erstellt wurde.',
             'title' => 'Willkommen',
             'subject' => ':appName | Willkommen',
->>>>>>> upstream/2.x
         ],
     ],
     'overlay' => [

@@ -2,12 +2,8 @@
 
 namespace A17\Twill\Repositories\Behaviors;
 
-<<<<<<< HEAD
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-=======
 use A17\Twill\Models\Behaviors\HasRelated;
 use A17\Twill\Models\RelatedItem;
->>>>>>> upstream/2.x
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -145,11 +141,7 @@ trait HandleRevisions
      * @param \A17\Twill\Models\Model|null $model
      * @return void
      */
-<<<<<<< HEAD
-    public function hydrateOrderedBelongsTomany($object, $fields, $relationship, $positionAttribute = 'position', $model = null)
-=======
     public function hydrateOrderedBelongsToMany($object, $fields, $relationship, $positionAttribute = 'position', $model = null)
->>>>>>> upstream/2.x
     {
         $fieldsHasElements = isset($fields['browsers'][$relationship]) && !empty($fields['browsers'][$relationship]);
         $relatedElements = $fieldsHasElements ? $fields['browsers'][$relationship] : [];
@@ -173,8 +165,6 @@ trait HandleRevisions
     /**
      * @param \A17\Twill\Models\Model $object
      * @param array $fields
-<<<<<<< HEAD
-=======
      * @return void
      */
     public function hydrateRelatedBrowsers($object, $fields)
@@ -212,7 +202,6 @@ trait HandleRevisions
     /**
      * @param \A17\Twill\Models\Model $object
      * @param array $fields
->>>>>>> upstream/2.x
      * @param string $relationship
      * @param \A17\Twill\Models\Model $model
      * @param string|null $repeaterName

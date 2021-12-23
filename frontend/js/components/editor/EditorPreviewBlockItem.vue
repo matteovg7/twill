@@ -47,11 +47,7 @@
 
 <script>
   import EditorIframe from '@/components/editor/EditorIframe.vue'
-<<<<<<< HEAD
-  import { BlockItemMixin } from '@/mixins'
-=======
   import { BlockEditorItemMixin } from '@/mixins'
->>>>>>> upstream/2.x
 
   export default {
     name: 'A17EditorPreviewBlockItem',
@@ -61,11 +57,7 @@
         default: false
       }
     },
-<<<<<<< HEAD
-    mixins: [BlockItemMixin],
-=======
     mixins: [BlockEditorItemMixin],
->>>>>>> upstream/2.x
     components: {
       'a17-editor-iframe': EditorIframe
     },

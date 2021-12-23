@@ -541,14 +541,6 @@ class ModuleMake extends Command
             $this->files->get(__DIR__ . '/stubs/controller.stub')
         );
 
-<<<<<<< HEAD
-        if ($this->sluggable) {
-            $stub = preg_replace('/{{!hasSlug}}[\s\S]+?{{\/!hasSlug}}/', '', $stub);
-        } else {
-            $stub = str_replace(['{{!hasSlug}}', '{{/!hasSlug}}'], '', $stub);
-        }
-
-=======
         $permalinkOption = '';
         $reorderOption = '';
 
@@ -572,8 +564,6 @@ class ModuleMake extends Command
 
         // Remove lines including only whitespace, leave true empty lines untouched
         $stub = preg_replace('/^[\s]+\n/m', '', $stub);
-
->>>>>>> upstream/2.x
         twill_put_stub(twill_path("{$dir}/" . $controllerClassName . '.php'), $stub);
 
         $this->info("Controller created successfully! Define your index/browser/form endpoints options!");

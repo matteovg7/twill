@@ -81,8 +81,7 @@ trait HandleFieldsGroups
         return $fields;
     }
 
-    protected function handleFieldsGroups($fields)
-    {
+    protected function handleFieldsGroups($fields) {
         foreach ($this->fieldsGroups as $group => $groupFields) {
             if ($this->fieldsGroupsFormFieldNamesAutoPrefix) {
                 $groupFields = array_map(function ($field_name) use ($group) {
@@ -94,27 +93,6 @@ trait HandleFieldsGroups
                 return !empty($value);
             });
 
-<<<<<<< HEAD
-=======
-            if ($this->fieldsGroupsFormFieldNamesAutoPrefix) {
-                $fieldsGroupWithGroupSeparator = [];
-                foreach ($fields[$group] as $key => $value) {
-                    $fieldsGroupWithGroupSeparator[Str::replaceFirst($group . $this->fieldsGroupsFormFieldNameSeparator, '', $key)] = $value;
-                }
-                $fields[$group] = $fieldsGroupWithGroupSeparator;
-            }
-
-            if (in_array($group, $this->model->getTranslatedAttributes()) && is_array($fields[$group])) {
-                $fieldForTranslationTrait = [];
-                foreach ($fields[$group] as $field => $translatedValues) {
-                    foreach ($translatedValues as $locale => $value) {
-                        $fieldForTranslationTrait[$locale][$field] = $value;
-                    }
-                }
-                $fields[$group] = $fieldForTranslationTrait;
-            }
-
->>>>>>> upstream/2.x
             if (empty($fields[$group])) {
                 $fields[$group] = null;
             }

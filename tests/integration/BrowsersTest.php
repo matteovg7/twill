@@ -143,11 +143,7 @@ class BrowsersTest extends TestCase
 
         $bios = collect([1, 2])->map(function ($i) {
             return app(BioRepository::class)->create([
-<<<<<<< HEAD
-                'title' => 'Lorem ipsum dolor sit amet',
-=======
                 'title' => 'Biography ' . $i,
->>>>>>> upstream/2.x
                 'published' => true,
             ]);
         });
@@ -263,11 +259,6 @@ class BrowsersTest extends TestCase
         $writers = $this->createWriters();
         $bio = $this->createBioWithWriter($writers[0]);
 
-<<<<<<< HEAD
-        // User can preview
-        $this->httpRequestAssert("/twill/bios/preview/{$bio->id}", 'PUT', []);
-        $this->assertSee('This is a bio');
-=======
         // User can preview modifications
         $this->httpRequestAssert("/twill/bios/preview/{$bio->id}", 'PUT', [
             'browsers' => [
@@ -283,7 +274,6 @@ class BrowsersTest extends TestCase
         ]);
         $this->assertSee('This is a bio');
         $this->assertSee('Writer: Charlie');
->>>>>>> upstream/2.x
     }
 
     public function testBrowserBelongsToPreviewRevisions()
@@ -293,16 +283,10 @@ class BrowsersTest extends TestCase
 
         // User can preview revisions
         $this->httpRequestAssert("/twill/bios/preview/{$bio->id}", 'PUT', [
-<<<<<<< HEAD
-            'revisionId' => Bio::first()->revisions->last()->id,
-        ]);
-        $this->assertSee('This is a bio');
-=======
             'revisionId' => Bio::first()->revisions->first()->id,
         ]);
         $this->assertSee('This is a bio');
         $this->assertSee('No writer');
->>>>>>> upstream/2.x
     }
 
     public function testBrowserBelongsToRestoreRevisions()
@@ -336,11 +320,6 @@ class BrowsersTest extends TestCase
         $writers = $this->createWriters();
         $book = $this->createBookWithWriters($writers);
 
-<<<<<<< HEAD
-        // User can preview
-        $this->httpRequestAssert("/twill/books/preview/{$book->id}", 'PUT', []);
-        $this->assertSee('This is a book');
-=======
         // User can preview modifications
         $this->httpRequestAssert("/twill/books/preview/{$book->id}", 'PUT', [
             'browsers' => [
@@ -356,7 +335,6 @@ class BrowsersTest extends TestCase
         ]);
         $this->assertSee('This is a book');
         $this->assertSee('Writers: Charlie');
->>>>>>> upstream/2.x
     }
 
     public function testBrowserRelatedPreviewRevisions()
@@ -366,16 +344,10 @@ class BrowsersTest extends TestCase
 
         // User can preview revisions
         $this->httpRequestAssert("/twill/books/preview/{$book->id}", 'PUT', [
-<<<<<<< HEAD
-            'revisionId' => Book::first()->revisions->last()->id,
-        ]);
-        $this->assertSee('This is a book');
-=======
             'revisionId' => Book::first()->revisions->first()->id,
         ]);
         $this->assertSee('This is a book');
         $this->assertSee('No writers');
->>>>>>> upstream/2.x
     }
 
     public function testBrowserRelatedRestoreRevisions()
@@ -406,11 +378,6 @@ class BrowsersTest extends TestCase
     {
         $writer = $this->createWriterWithBios();
 
-<<<<<<< HEAD
-        // User can preview
-        $this->httpRequestAssert("/twill/writers/preview/{$writer->id}", 'PUT', []);
-        $this->assertSee('This is a writer');
-=======
         // User can preview modifications
         $this->httpRequestAssert("/twill/writers/preview/{$writer->id}", 'PUT', [
             'browsers' => [
@@ -426,7 +393,6 @@ class BrowsersTest extends TestCase
         ]);
         $this->assertSee('This is a writer');
         $this->assertSee('Bios: Biography 2');
->>>>>>> upstream/2.x
     }
 
     public function testBrowserHasManyPreviewRevisions()
@@ -435,16 +401,10 @@ class BrowsersTest extends TestCase
 
         // User can preview revisions
         $this->httpRequestAssert("/twill/writers/preview/{$writer->id}", 'PUT', [
-<<<<<<< HEAD
-            'revisionId' => $writer->revisions->last()->id,
-        ]);
-        $this->assertSee('This is a writer');
-=======
             'revisionId' => $writer->revisions->first()->id,
         ]);
         $this->assertSee('This is a writer');
         $this->assertSee('No bios');
->>>>>>> upstream/2.x
     }
 
     public function testBrowserHasManyRestoreRevisions()

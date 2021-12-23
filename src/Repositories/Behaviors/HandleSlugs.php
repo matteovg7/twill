@@ -86,19 +86,11 @@ trait HandleSlugs
     }
 
     /**
-<<<<<<< HEAD
-     * @param array $slug
-     * @param array $with
-     * @param array $withCount
-     * @param array $scopes
-     * @return \A17\Twill\Models\Model
-=======
      * @param string $slug
      * @param array $with
      * @param array $withCount
      * @param array $scopes
      * @return \A17\Twill\Models\Model|null
->>>>>>> upstream/2.x
      */
     public function forSlug($slug, $with = [], $withCount = [], $scopes = [])
     {
@@ -131,11 +123,7 @@ trait HandleSlugs
     }
 
     /**
-<<<<<<< HEAD
-     * @param array $slug
-=======
      * @param string $slug
->>>>>>> upstream/2.x
      * @param array $with
      * @param array $withCount
      * @return \A17\Twill\Models\Model

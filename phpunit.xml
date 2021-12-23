@@ -35,11 +35,8 @@
       <file>tests/integration/PasswordsTest.php</file>
       <file>tests/integration/CapsulesTest.php</file>
       <file>tests/integration/BrowsersTest.php</file>
-<<<<<<< HEAD
-=======
       <file>tests/integration/NestedModuleTest.php</file>
       <file>tests/integration/SingletonModuleTest.php</file>
->>>>>>> upstream/2.x
     </testsuite>
   </testsuites>
   <filter>

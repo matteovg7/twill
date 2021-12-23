@@ -7,14 +7,6 @@ use {{baseController}} as BaseModuleController;
 class {{controllerClassName}} extends BaseModuleController
 {
     protected $moduleName = '{{moduleName}}';
-<<<<<<< HEAD
-    {{!hasSlug}}
-    protected $indexOptions = [
-        'permalink' => false
-    ];
-    {{/!hasSlug}}
-=======
-
     protected $indexOptions = [
         {{permalinkOption}}
         {{reorderOption}}
@@ -24,5 +16,4 @@ class {{controllerClassName}} extends BaseModuleController
 
     protected $nestedItemsDepth = 1;
     {{/hasNesting}}
->>>>>>> upstream/2.x
 }

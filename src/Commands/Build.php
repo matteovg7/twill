@@ -90,11 +90,7 @@ class Build extends Command
 
         if ($this->option('hot')) {
             $this->startWatcher(resource_path('assets/js/**/*.vue'), 'php artisan twill:build --copyOnly');
-<<<<<<< HEAD
-            $this->runProcessInTwill(['npm', 'run', 'serve'], true);
-=======
             $this->runProcessInTwill(['npm', 'run', 'serve', '--', "--port={$this->getDevPort()}"], true);
->>>>>>> upstream/2.x
         } elseif ($this->option('watch')) {
             $this->startWatcher(resource_path('assets/js/**/*.vue'), 'php artisan twill:build --copyOnly');
             $this->runProcessInTwill(['npm', 'run', 'watch'], true);
@@ -120,36 +116,6 @@ class Build extends Command
         preg_match('/^.*:(\d+)/', config('twill.dev_mode_url'), $matches);
 
         return $matches[1] ?? '8080';
-    }
-
-    /**
-     * @return void
-     */
-    private function startWatcher($pattern, $command)
-    {
-        if (empty($this->filesystem->glob($pattern))) {
-            return;
-        }
-
-        $chokidarPath = base_path(config('twill.vendor_path')) . '/node_modules/.bin/chokidar';
-        $chokidarCommand = [$chokidarPath, $pattern, "-c", $command];
-
-        if ($this->filesystem->exists($chokidarPath)) {
-            $process = new Process($chokidarCommand, base_path());
-            $process->setTty(Process::isTtySupported());
-            $process->setTimeout(null);
-
-            try {
-                $process->start();
-            } catch(\Exception $e) {
-                $this->warn("Could not start the chokidar watcher ({$e->getMessage()})\n");
-            }
-        } else {
-            $this->warn("The `chokidar-cli` package was not found. It is required to watch custom blocks & components in development. You can install it by running:\n");
-            $this->warn("    php artisan twill:dev\n");
-            $this->warn("without the `--noInstall` option.\n");
-            sleep(2);
-        }
     }
 
     /**

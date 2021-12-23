@@ -159,13 +159,6 @@ trait HasCapsules
 
         $capsule['config'] = $this->loadCapsuleConfig($capsule);
 
-<<<<<<< HEAD
-        $this->registerPsr4Autoloader($capsule);
-
-        $this->autoloadConfigFiles($capsule);
-
-=======
->>>>>>> upstream/2.x
         return $capsule;
     }
 
@@ -385,15 +378,9 @@ trait HasCapsules
         }
 
         collect($files)->each(function ($file) {
-<<<<<<< HEAD
-           if (file_exists($file)) {
-               require_once $file;
-           }
-=======
             if (file_exists($file)) {
                 require_once $file;
             }
->>>>>>> upstream/2.x
         });
     }
 }

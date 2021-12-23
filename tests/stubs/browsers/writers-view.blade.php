@@ -1,6 +1,4 @@
 <div>This is a writer</div>
-<<<<<<< HEAD
-=======
 
 <div>
     @php $titles = $item->bios->pluck('title'); @endphp
@@ -11,4 +9,3 @@
         No bios
     @endif
 </div>
->>>>>>> upstream/2.x

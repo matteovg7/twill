@@ -1,9 +1,5 @@
 <template>
-<<<<<<< HEAD
-  <a17-block-model :editor-name="editorName" v-slot="{ add, edit, unEdit }">
-=======
   <a17-blockeditor-model :editor-name="editorName" v-slot="{ add, edit, unEdit }">
->>>>>>> upstream/2.x
     <div class="editorPreview"
          :class="previewClass"
          :style="previewStyle"
@@ -19,11 +15,7 @@
                  @add="onAdd(add, edit, $event)"
                  @update="onUpdate">
         <template v-for="savedBlock in blocks">
-<<<<<<< HEAD
-          <a17-block-model :block="savedBlock"
-=======
           <a17-blockeditor-model :block="savedBlock"
->>>>>>> upstream/2.x
                            :key="savedBlock.id"
                            :editor-name="editorName"
                            v-slot="{ block, isActive, blockIndex, move, remove, edit, unEdit }">
@@ -36,37 +28,23 @@
                                       @block:select="_selectBlock(edit, blockIndex)"
                                       @block:unselect="_unselectBlock(unEdit, blockIndex)"
                                       @block:move="move"
-<<<<<<< HEAD
-                                      @block:delete="deleteBlock(remove)"
-                                      @scroll-to="scrollToActive"/>
-          </a17-block-model>
-=======
                                       @block:delete="_deleteBlock(remove)"
                                       @scroll-to="scrollToActive"/>
           </a17-blockeditor-model>
->>>>>>> upstream/2.x
         </template>
       </draggable>
       <a17-spinner v-if="loading"
                    :visible="true">{{ $trans('fields.block-editor.loading', 'Loading') }}&hellip;
       </a17-spinner>
     </div>
-<<<<<<< HEAD
-  </a17-block-model>
-=======
   </a17-blockeditor-model>
->>>>>>> upstream/2.x
 </template>
 
 <script>
   import { DraggableMixin, BlockEditorMixin } from '@/mixins'
 
   import A17EditorBlockPreview from '@/components/editor/EditorPreviewBlockItem'
-<<<<<<< HEAD
-  import A17BlockModel from '@/components/blocks/BlockModel'
-=======
   import A17BlockEditorModel from '@/components/blocks/BlockEditorModel'
->>>>>>> upstream/2.x
   import A17Spinner from '@/components/Spinner.vue'
 
   import { PREVIEW } from '@/store/mutations/index'
@@ -95,23 +73,13 @@
     components: {
       draggable,
       'a17-editor-block-preview': A17EditorBlockPreview,
-<<<<<<< HEAD
-      'a17-block-model': A17BlockModel,
-=======
       'a17-blockeditor-model': A17BlockEditorModel,
->>>>>>> upstream/2.x
       'a17-spinner': A17Spinner
     },
     data () {
       return {
         loading: false,
         blockSelectIndex: -1,
-<<<<<<< HEAD
-        unSubscribe: function () {
-          return null
-        },
-=======
->>>>>>> upstream/2.x
         handle: '.editorPreview__dragger' // Drag handle override
       }
     },
@@ -155,15 +123,6 @@
         if (fn) {
           this.selectBlock(fn, index)
         }
-<<<<<<< HEAD
-        if (this.blockSelectIndex !== index) {
-          this.blockSelectIndex = index
-          this.unSubscribe = this.$store.subscribe((mutation) => {
-            // console.log('mutation', mutation)
-            // Don't trigger a refresh of the preview every single time, just when necessary
-            if (PREVIEW.REFRESH_BLOCK_PREVIEW.includes(mutation.type)) {
-              // console.log('Editor - store changed : ' + mutation.type)
-=======
 
         if (this.blockSelectIndex !== index) {
           this.unSubscribe()
@@ -171,7 +130,6 @@
           this._unSubscribeInternal = this.$store.subscribe((mutation) => {
             // Don't trigger a refresh of the preview every single time, just when necessary
             if (PREVIEW.REFRESH_BLOCK_PREVIEW.includes(mutation.type)) {
->>>>>>> upstream/2.x
               if (PREVIEW.REFRESH_BLOCK_PREVIEW_ALL.includes(mutation.type)) {
                 this.getAllPreviews()
               } else {
@@ -180,15 +138,6 @@
             }
           })
         }
-<<<<<<< HEAD
-      },
-      _unselectBlock (fn, index = this.blockSelectIndex) {
-        this.getPreview(index)
-        this.unselectBlock(fn, index)
-        this.blockSelectIndex = -1
-        this.unSubscribe()
-      },
-=======
       },
       _unselectBlock (fn, index = this.blockSelectIndex) {
         this.unSubscribe()
@@ -206,8 +155,6 @@
         this._unSubscribeInternal()
         this._unSubscribeInternal = null
       },
->>>>>>> upstream/2.x
-
       // Previews management
       getAllPreviews () {
         this.loading = true
