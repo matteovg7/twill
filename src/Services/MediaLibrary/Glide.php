@@ -13,6 +13,7 @@ use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use League\Glide\Urls\UrlBuilderFactory;
+use Illuminate\Support\Facades\Cache;
 
 class Glide implements ImageServiceInterface
 {
@@ -105,18 +106,15 @@ class Glide implements ImageServiceInterface
         $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
         $cachePathMd5 = md5($cachePath);
 
-        if(env('GLIDE_STORAGE') == "s3" && !DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
+        if(env('GLIDE_STORAGE') == "s3" && !Cache::has('image_' . $cachePathMd5)) {
             $pathExplode = explode("/", $path);
             $uuid = $pathExplode[0];
-
-            //Pulisco la cache prima dell'elemento prima di rigenerarla
-            DB::table('cache_cdns')->where(['uuid' => $uuid])->delete();
 
             foreach($this->config->get('twill.glide.cache')->listContents($this->config->get('twill.glide.cache_path_prefix') . "/" . $path) as $file) {
                 $this->config->get('twill.glide.cache')->delete($file["path"]);
             }
 
-            DB::table('cache_cdns')->insert(["hash" => $cachePathMd5, "uuid" => $uuid, "created_at" =>  \Carbon\Carbon::now(), "updated_at" => \Carbon\Carbon::now() ]);
+            Cache::forever('image_' . $cachePathMd5, $uuid);
         }
 
         return $this->server->getImageResponse($path, $this->request->all());
@@ -139,7 +137,7 @@ class Glide implements ImageServiceInterface
         $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $params));
         $cachePathMd5 = md5($cachePath);
 
-        if(env('GLIDE_STORAGE') == "s3" && DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
+        if(env('GLIDE_STORAGE') == "s3" && Cache::has('image_' . $cachePathMd5)) {
             $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
             return $url;
         }
@@ -161,7 +159,7 @@ class Glide implements ImageServiceInterface
         $cachePath = $this->server->getCachePath($id, $this->getCrop($cropParams) + $params);
         $cachePathMd5 = md5($cachePath);
 
-        if(env('GLIDE_STORAGE') == "s3" && DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
+        if(env('GLIDE_STORAGE') == "s3" && Cache::has('image_' . $cachePathMd5)) {
             $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
             return $url;
         }
@@ -237,7 +235,7 @@ class Glide implements ImageServiceInterface
         $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $params + $cropParams));
         $cachePathMd5 = md5($cachePath);
 
-        if(env('GLIDE_STORAGE') == "s3" && DB::table('cache_cdns')->where(['hash' => $cachePathMd5])->first()) {
+        if(env('GLIDE_STORAGE') == "s3" && Cache::has('image_' . $cachePathMd5)) {
             $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
             return $url;
         }
