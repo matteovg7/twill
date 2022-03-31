@@ -80,7 +80,7 @@ class RefreshLQIP extends Command
                         return;
                     }
 
-                    if($url) {
+                    if(isset($url) && $url) {
                         try {
                             $data = file_get_contents($url);
                             $dataUri = 'data:image/gif;base64,' . base64_encode($data);
