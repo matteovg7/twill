@@ -102,22 +102,20 @@ class Glide implements ImageServiceInterface
             SignatureFactory::create($this->config->get('twill.glide.sign_key'))->validateRequest($this->config->get('twill.glide.base_path') . '/' . $path, $this->request->all());
         }
 
-        $defaultParams = config('twill.glide.default_params');
-        $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
-        $cachePathMd5 = md5($cachePath);
+        $response = $this->server->getImageResponse($path, $this->request->all());
 
-        if(env('GLIDE_STORAGE') == "s3" && !Cache::has('image_' . $cachePathMd5)) {
+        if(env('GLIDE_STORAGE') == "s3") {
+            $defaultParams = config('twill.glide.default_params');
+            $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
+            Log::error(array_replace($defaultParams, $this->request->all()));
+            $cachePathMd5 = md5($cachePath);
             $pathExplode = explode("/", $path);
             $uuid = $pathExplode[0];
-
-            foreach($this->config->get('twill.glide.cache')->listContents($this->config->get('twill.glide.cache_path_prefix') . "/" . $path) as $file) {
-                $this->config->get('twill.glide.cache')->delete($file["path"]);
-            }
 
             Cache::forever('image_' . $cachePathMd5, $uuid);
         }
 
-        return $this->server->getImageResponse($path, $this->request->all());
+        return $response;
     }
 
     /**
