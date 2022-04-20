@@ -107,7 +107,6 @@ class Glide implements ImageServiceInterface
         if(env('GLIDE_STORAGE') == "s3") {
             $defaultParams = config('twill.glide.default_params');
             $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
-            Log::error(array_replace($defaultParams, $this->request->all()));
             $cachePathMd5 = md5($cachePath);
             $pathExplode = explode("/", $path);
             $uuid = $pathExplode[0];
