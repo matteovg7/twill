@@ -332,6 +332,7 @@ return [
         'media-library' => 'Media Library',
         'settings' => 'Settings',
         'close-menu' => 'Close menu',
+        'open-live-site' => 'Open live site',
     ],
     'notifications' => [
         'reset' => [
@@ -398,6 +399,7 @@ return [
         'parent-page' => 'Parent page',
         'review-status' => 'Review status',
         'visibility' => 'Visibility',
+        'unsaved-changes' => 'There are unsaved changes',
     ],
     'select' => [
         'empty-text' => 'Sorry, no matching options.',

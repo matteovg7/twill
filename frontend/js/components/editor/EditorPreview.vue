@@ -155,6 +155,7 @@
         this._unSubscribeInternal()
         this._unSubscribeInternal = null
       },
+
       // Previews management
       getAllPreviews () {
         this.loading = true

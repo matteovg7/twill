@@ -30,9 +30,6 @@ class MediaRepository extends ModuleRepository
     {
         $storageId = $object->uuid;
         if (Config::get('twill.media_library.cascade_delete')) {
-            foreach(Config::get('twill.glide.cache')->listContents(Config::get('twill.glide.cache_path_prefix') . "/" . $storageId) as $file) {
-                Config::get('twill.glide.cache')->delete($file["path"]);
-            }
             Storage::disk(Config::get('twill.media_library.disk'))->delete($storageId);
         }
     }

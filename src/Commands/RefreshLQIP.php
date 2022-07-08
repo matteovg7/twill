@@ -69,25 +69,19 @@ class RefreshLQIP extends Command
 
                     $imageService = config('twill.media_library.image_service');
 
-                    try {
-                        $url = ImageService::getLQIPUrl($uuid, $crop_params + ['w' => $lqip_width]);
-                    } catch (\Exception $e) {
-                        $this->info("LQIP was not generated for $uuid because {$e->getMessage()}");
-                    }
-                    
+                    $url = ImageService::getLQIPUrl($uuid, $crop_params + ['w' => $lqip_width]);
+
                     if (($imageService === Glide::class) && !config('twill.glide.base_url')) {
                         $this->error('Cannot generate LQIP. Missing glide base url. Please set GLIDE_BASE_URL in your .env');
                         return;
                     }
 
-                    if(isset($url) && $url) {
-                        try {
-                            $data = file_get_contents($url);
-                            $dataUri = 'data:image/gif;base64,' . base64_encode($data);
-                            $this->db->table(config('twill.mediables_table', 'twill_mediables'))->where('id', $attached_media->id)->update(['lqip_data' => $dataUri]);
-                        } catch (\Exception $e) {
-                            $this->info("LQIP was not generated for $uuid because {$e->getMessage()}");
-                        }
+                    try {
+                        $data = file_get_contents($url);
+                        $dataUri = 'data:image/gif;base64,' . base64_encode($data);
+                        $this->db->table(config('twill.mediables_table', 'twill_mediables'))->where('id', $attached_media->id)->update(['lqip_data' => $dataUri]);
+                    } catch (\Exception $e) {
+                        $this->info("LQIP was not generated for $uuid because {$e->getMessage()}");
                     }
                 }
             }

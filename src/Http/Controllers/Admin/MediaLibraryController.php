@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 
 class MediaLibraryController extends ModuleController implements SignUploadListener
 {
@@ -175,11 +174,11 @@ class MediaLibraryController extends ModuleController implements SignUploadListe
 
         $disk = $this->config->get('twill.media_library.disk');
 
-        $request->file('qqfile')->storeAs($fileDirectory, $filename, $disk);
+        $uploadedFile = $request->file('qqfile');
 
-        $filePath = Storage::disk($disk)->path($fileDirectory . '/' . $filename);
+        list($w, $h) = getimagesize($uploadedFile->path());
 
-        list($w, $h) = getimagesize($filePath);
+        $uploadedFile->storeAs($fileDirectory, $filename, $disk);
 
         $fields = [
             'uuid' => $uuid,
@@ -204,12 +203,8 @@ class MediaLibraryController extends ModuleController implements SignUploadListe
      */
     public function storeReference($request)
     {
-        if($request->input('key')) {
-            $path = explode("/", $request->input('key'));
-        }
-        
         $fields = [
-            'uuid' => $request->input('key') ? $path[count($path) - 2] . "/" . $path[count($path) - 1] : $request->input('blob'),
+            'uuid' => $request->input('key') ?? $request->input('blob'),
             'filename' => $request->input('name'),
             'width' => $request->input('width'),
             'height' => $request->input('height'),

@@ -41,11 +41,11 @@
 </template>
 
 <script>
-import { BlockEditorItemMixin } from '@/mixins'
+  import { BlockEditorItemMixin } from '@/mixins'
 
-export default {
-  name: 'A17EditorSidebarBlockItem',
-  mixins: [BlockEditorItemMixin],
+  export default {
+    name: 'A17EditorSidebarBlockItem',
+    mixins: [BlockEditorItemMixin],
     methods: {
       setBlockAttributes (attributes) {
         return {
