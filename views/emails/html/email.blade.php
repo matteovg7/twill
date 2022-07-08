@@ -32,7 +32,7 @@
 {{-- Footer --}}
 @slot('footer')
 @component('twill::emails.html.footer')
-&copy; {{ date('Y') }}  &mdash; CMS powered by AREA 17. All rights reserved.
+&copy; {{ date('Y') }}  &mdash; All rights reserved.
 @endcomponent
 @endslot
 @endcomponent
