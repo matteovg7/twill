@@ -6,12 +6,15 @@ use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use League\Glide\Responses\LaravelResponseFactory;
+use League\Glide\Server;
 use League\Glide\ServerFactory;
 use League\Glide\Signatures\SignatureFactory;
 use League\Glide\Urls\UrlBuilderFactory;
+use Illuminate\Support\Facades\Cache;
 
 class Glide implements ImageServiceInterface
 {
@@ -75,6 +78,7 @@ class Glide implements ImageServiceInterface
             'response' => new LaravelResponseFactory($this->request),
             'source' => $this->config->get('twill.glide.source'),
             'cache' => $this->config->get('twill.glide.cache'),
+            'source_path_prefix' => $this->config->get('twill.glide.source_path_prefix'),
             'cache_path_prefix' => $this->config->get('twill.glide.cache_path_prefix'),
             'base_url' => $baseUrl,
             'presets' => $this->config->get('twill.glide.presets', []),
@@ -93,11 +97,29 @@ class Glide implements ImageServiceInterface
      */
     public function render($path)
     {
+        $pathArray = explode(".", $path);
+        $extension = end($pathArray);
+        if($extension == "gif" || $extension == "svg") {
+            return $this->server->getResponseFactory()->create($this->server->getSource(), $this->server->getSourcePath($path));
+        }
+
         if ($this->config->get('twill.glide.use_signed_urls')) {
             SignatureFactory::create($this->config->get('twill.glide.sign_key'))->validateRequest($this->config->get('twill.glide.base_path') . '/' . $path, $this->request->all());
         }
 
-        return $this->server->getImageResponse($path, $this->request->all());
+        $response = $this->server->getImageResponse($path, $this->request->all());
+
+        if(env('GLIDE_STORAGE') == "s3") {
+            $defaultParams = config('twill.glide.default_params');
+            $cachePath = $this->server->getCachePath($path, array_replace($defaultParams, $this->request->all()));
+            $cachePathMd5 = md5($cachePath);
+            $pathExplode = explode("/", $path);
+            $uuid = $pathExplode[0];
+
+            Cache::forever('image_' . $cachePathMd5, $uuid);
+        }
+
+        return $response;
     }
 
     /**
@@ -108,7 +130,22 @@ class Glide implements ImageServiceInterface
     public function getUrl($id, array $params = [])
     {
         $defaultParams = config('twill.glide.default_params');
+        $addParamsToSvgs = config('twill.glide.add_params_to_svgs', false);
 
+        if (!$addParamsToSvgs && Str::endsWith($id, '.svg')) {
+            return $this->urlBuilder->getUrl($id);
+        }
+
+        $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $params));
+        $cachePathMd5 = md5($cachePath);
+
+        if(env('GLIDE_STORAGE') == "s3" && Cache::has('image_' . $cachePathMd5)) {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
+            return $url;
+        }
+        else {
+            return $this->getOriginalMediaUrl($id) ?? $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
+        }
         return $this->getOriginalMediaUrl($id) ??
             $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params));
     }
@@ -121,7 +158,16 @@ class Glide implements ImageServiceInterface
      */
     public function getUrlWithCrop($id, array $cropParams, array $params = [])
     {
-        return $this->getUrl($id, $this->getCrop($cropParams) + $params);
+        $cachePath = $this->server->getCachePath($id, $this->getCrop($cropParams) + $params);
+        $cachePathMd5 = md5($cachePath);
+
+        if(env('GLIDE_STORAGE') == "s3" && Cache::has('image_' . $cachePathMd5)) {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
+            return $url;
+        }
+        else {
+            return $this->getUrl($id, $this->getCrop($cropParams) + $params);
+        }
     }
 
     /**
@@ -150,7 +196,14 @@ class Glide implements ImageServiceInterface
 
         $params = Arr::except($params, $this->cropParamsKeys);
 
-        return $this->getUrl($id, array_replace($defaultParams, $params + $cropParams));
+        $path = $this->server->makeImage($id, array_replace($defaultParams, $params + $cropParams));
+
+        if(env('GLIDE_STORAGE') == "s3") {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $path;
+            return $url;
+        }
+
+        return $path;
     }
 
     /**
@@ -181,7 +234,16 @@ class Glide implements ImageServiceInterface
 
         $params = Arr::except($params, $this->cropParamsKeys);
 
-        return $this->getUrl($id, array_replace($defaultParams, $params + $cropParams));
+        $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $params + $cropParams));
+        $cachePathMd5 = md5($cachePath);
+
+        if(env('GLIDE_STORAGE') == "s3" && Cache::has('image_' . $cachePathMd5)) {
+            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
+            return $url;
+        }
+        else {
+            return $this->urlBuilder->getUrl($id, array_replace($defaultParams, $params + $cropParams));
+        }
     }
 
     /**
@@ -279,6 +341,9 @@ class Glide implements ImageServiceInterface
      */
     private function getOriginalMediaUrl($id)
     {
+        $libraryDisk = $this->config->get('twill.media_library.disk');
+        $endpointType = $this->config->get('twill.media_library.endpoint_type');
+        $localMediaLibraryUrl = $this->config->get("filesystems.disks.$libraryDisk.url");
         $originalMediaForExtensions = $this->config->get('twill.glide.original_media_for_extensions');
         $addParamsToSvgs = $this->config->get('twill.glide.add_params_to_svgs', false);
 
@@ -286,6 +351,20 @@ class Glide implements ImageServiceInterface
             return null;
         }
 
-        return Storage::disk(config('twill.media_library.disk'))->url($id);
+        switch ($endpointType) {
+            case 'local':
+                $endpoint = $localMediaLibraryUrl;
+                break;
+            case 's3':
+                $endpoint = s3Endpoint($libraryDisk);
+                break;
+            case 'azure':
+                $endpoint = azureEndpoint($libraryDisk);
+                break;
+            default:
+                $endpoint = '';
+        }
+
+        return $endpoint . '/' . $id;
     }
 }

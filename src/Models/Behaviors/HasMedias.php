@@ -52,20 +52,34 @@ trait HasMedias
             ->withTimestamps()->orderBy(config('twill.mediables_table', 'twill_mediables') . '.id', 'asc');
     }
 
-    private function findMedia($role, $crop = 'default')
+    private function findMedia($role, $crop = "default")
     {
-        $media = $this->medias->first(function ($media) use ($role, $crop) {
+        $foundMedia = false;
+        $media = $this->medias->first(function ($media) use ($role, $crop, &$foundMedia) {
             if (config('twill.media_library.translated_form_fields', false)) {
                 $localeScope = $media->pivot->locale === app()->getLocale();
             }
 
-            return $media->pivot->role === $role && $media->pivot->crop === $crop && ($localeScope ?? true);
+            if (!$foundMedia) {
+                $foundMedia = $media->pivot->role === $role && ($localeScope ?? true);
+            }
+
+            return $foundMedia && $media->pivot->crop === $crop;
         });
 
-        if (! $media && config('twill.media_library.translated_form_fields', false)) {
-            $media = $this->medias->first(function ($media) use ($role, $crop) {
-                return $media->pivot->role === $role && $media->pivot->crop === $crop;
+        if (!$media && config('twill.media_library.translated_form_fields', false)) {
+            $media = $this->medias->first(function ($media) use ($role, $crop, &$foundMedia) {
+                if (!$foundMedia) {
+                    $foundMedia = $media->pivot->role === $role;
+                }
+
+                return $foundMedia && $media->pivot->crop === $crop;
             });
+        }
+
+        if ($foundMedia && !$media && config('app.debug')) {
+            // In this case we found the media but not the crop because our result is still empty.
+            throw new MediaCropNotFoundException($crop);
         }
 
         return $media;
@@ -112,14 +126,24 @@ trait HasMedias
                 return ImageService::getCmsUrl($media->uuid, $crop_params + $params);
             }
 
-            return ImageService::getUrlWithCrop($media->uuid, $crop_params, $params);
+            $data = [
+                "fallback" => ImageService::getUrlWithCrop($media->uuid, $crop_params, $params),
+                "webp" => ImageService::getUrlWithCrop($media->uuid, $crop_params, $params + ['fm' => 'webp']),
+            ];
+
+            return $data;
         }
 
         if ($has_fallback) {
             return null;
         }
 
-        return ImageService::getTransparentFallbackUrl();
+        $data = [
+            "fallback" => ImageService::getTransparentFallbackUrl(),
+            "webp" => ImageService::getTransparentFallbackUrl(),
+        ];
+
+        return $data;
     }
 
     /**

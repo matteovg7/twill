@@ -11,19 +11,8 @@ if (!function_exists('s3Endpoint')) {
      */
     function s3Endpoint($disk = 'libraries')
     {
-        $diskInstance = Storage::disk($disk);
-
-        $adapter = $diskInstance->getAdapter();
-
-        if (is_callable([$adapter, 'getClient'])) {
-            $s3Client = $adapter->getClient();
-        } else {
-            $s3Client = new S3Client($diskInstance->getConfig());
-        }
-
-        $s3PostObject = new PostObjectV4($s3Client, config("filesystems.disks.{$disk}.bucket"), []);
-
-        return $s3PostObject->getFormAttributes()['action'];
+        $scheme = config("filesystems.disks.{$disk}.use_https") ? 'https://' : '';
+        return $scheme . config("filesystems.disks.{$disk}.bucket") . '.' . Storage::disk($disk)->getAdapter()->getClient()->getEndpoint()->getHost();
     }
 }
 

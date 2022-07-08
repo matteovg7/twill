@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class MediaLibraryController extends ModuleController implements SignUploadListener
 {
@@ -203,6 +204,10 @@ class MediaLibraryController extends ModuleController implements SignUploadListe
      */
     public function storeReference($request)
     {
+        if($request->input('key')) {
+            $path = explode("/", $request->input('key'));
+        }
+
         $fields = [
             'uuid' => $request->input('key') ?? $request->input('blob'),
             'filename' => $request->input('name'),
