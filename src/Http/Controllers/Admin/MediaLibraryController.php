@@ -209,7 +209,7 @@ class MediaLibraryController extends ModuleController implements SignUploadListe
         }
 
         $fields = [
-            'uuid' => $request->input('key') ?? $request->input('blob'),
+            'uuid' => $request->input('key') ? $path[count($path) - 2] . "/" . $path[count($path) - 1] : $request->input('blob'),
             'filename' => $request->input('name'),
             'width' => $request->input('width'),
             'height' => $request->input('height'),
