@@ -154,15 +154,25 @@ class Glide implements ImageServiceInterface
      */
     public function getUrlWithCrop($id, array $cropParams, array $params = [])
     {
-        $cachePath = $this->server->getCachePath($id, $this->getCrop($cropParams) + $params);
+        $defaultParams = config('twill.glide.default_params');
+        $cachePath = $this->server->getCachePath($id, array_replace($defaultParams, $this->getCrop($cropParams) + $params));
         $cachePathMd5 = md5($cachePath);
 
-        if(env('GLIDE_STORAGE') == "s3" && Cache::has('image_' . $cachePathMd5)) {
-            $url = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
-            return $url;
+        if(env('GLIDE_STORAGE') == "s3") {
+            $urlCdn = env("CDN_ENDPOINT", "https://cdn.vg7.org") . "/" . $cachePath;
+            $urlLocal = $this->getUrl($id, $this->getCrop($cropParams) + $params);
+
+            return [
+                'url_cdn' => $urlCdn,
+                'url_local' => $urlLocal
+            ];
         }
         else {
-            return $this->getUrl($id, $this->getCrop($cropParams) + $params);
+            $urlLocal = $this->getUrl($id, $this->getCrop($cropParams) + $params);
+
+            return [
+                'url_local' => $urlLocal
+            ];
         }
     }
 
