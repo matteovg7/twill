@@ -122,13 +122,18 @@ trait HasMedias
             $crop_params = Arr::only($media->pivot->toArray(), $this->cropParamsKeys);
 
             if ($cms) {
-
                 return ImageService::getCmsUrl($media->uuid, $crop_params + $params);
             }
 
+            $urlFallback = ImageService::getUrlWithCrop($media->uuid, $crop_params, $params);
+            $urlWebp = ImageService::getUrlWithCrop($media->uuid, $crop_params, $params + ['fm' => 'webp']);
+
             $data = [
-                "fallback" => ImageService::getUrlWithCrop($media->uuid, $crop_params, $params),
-                "webp" => ImageService::getUrlWithCrop($media->uuid, $crop_params, $params + ['fm' => 'webp']),
+                "fallback" => isset($urlFallback['url_cdn']) ? $urlFallback['url_cdn'] : $urlFallback['url_local'],
+                "webp" => isset($urlWebp['url_cdn']) ? $urlWebp['url_cdn'] : $urlWebp['url_local'],
+                "fallback_local" => $urlFallback['url_local'],
+                'width' => $crop_params->crop_w ?? $media->width,
+                'height' => $crop_params->crop_h ?? $media->height
             ];
 
             return $data;
@@ -141,6 +146,9 @@ trait HasMedias
         $data = [
             "fallback" => ImageService::getTransparentFallbackUrl(),
             "webp" => ImageService::getTransparentFallbackUrl(),
+            "fallback_local" => ImageService::getTransparentFallbackUrl(),
+            'width' => 0,
+            'height' => 0
         ];
 
         return $data;
