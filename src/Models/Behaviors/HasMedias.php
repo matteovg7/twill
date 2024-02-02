@@ -128,10 +128,29 @@ trait HasMedias
             $urlFallback = ImageService::getUrlWithCrop($media->uuid, $crop_params, $params);
             $urlWebp = ImageService::getUrlWithCrop($media->uuid, $crop_params, $params + ['fm' => 'webp']);
 
+            if(is_array($urlFallback)) {
+                $urlFallbackString = isset($urlFallback['url_cdn']) ? $urlFallback['url_cdn'] : $urlFallback['url_local'];
+                $urlFallbackLocalString = $urlFallback['url_local'];
+            }
+            else {
+                $urlFallbackString = $urlFallback;
+                $urlFallbackLocalString = $urlFallback;
+            }
+
+            if(is_array($urlWebp)) {
+                $urlWebpString = isset($urlWebp['url_cdn']) ? $urlWebp['url_cdn'] : $urlWebp['url_local'];
+                $urlWebpLocalString = $urlWebp['url_local'];
+            }
+            else {
+                $urlWebpString = $urlWebp;
+                $urlWebpLocalString = $urlWebp;
+            }
+            
             $data = [
-                "fallback" => isset($urlFallback['url_cdn']) ? $urlFallback['url_cdn'] : $urlFallback['url_local'],
-                "webp" => isset($urlWebp['url_cdn']) ? $urlWebp['url_cdn'] : $urlWebp['url_local'],
-                "fallback_local" => $urlFallback['url_local'],
+                "fallback" => $urlFallbackString,
+                "webp" => $urlWebpString,
+                "fallback_local" => $urlFallbackLocalString,
+                "webp_local" => $urlWebpLocalString,
                 'width' => $crop_params->crop_w ?? $media->width,
                 'height' => $crop_params->crop_h ?? $media->height
             ];
@@ -147,6 +166,7 @@ trait HasMedias
             "fallback" => ImageService::getTransparentFallbackUrl(),
             "webp" => ImageService::getTransparentFallbackUrl(),
             "fallback_local" => ImageService::getTransparentFallbackUrl(),
+            "webp_local" => ImageService::getTransparentFallbackUrl(),
             'width' => 0,
             'height' => 0
         ];
